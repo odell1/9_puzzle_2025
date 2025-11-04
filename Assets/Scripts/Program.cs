@@ -10,7 +10,7 @@ class Program
         Piezas piezas=new Piezas();
         piezas.Start();
 
-         NodoToCSV nodoToCSV = new NodoToCSV();
+        
         
     }
 }

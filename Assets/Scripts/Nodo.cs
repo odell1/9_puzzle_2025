@@ -240,64 +240,6 @@ public class Nodo
     }//Copiar
 
 
-        // Método para calcular la heurística basada en piezas mal colocadas
-    public void CalcularHeuristicaPiezasMalColocadas()
-    {
-        int[,] meta = {
-            {0, 1, 2},
-            {3, 4, 5},
-            {6, 7, 8}
-        };
-        int piezasMalColocadas = 0;
-
-        for (int i = 0; i < 3; i++)
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                if (nodo[i, j] != 0 && nodo[i, j] != meta[i, j])
-                {
-                    piezasMalColocadas++;
-                }
-            }
-        }
-
-        Heuristica = piezasMalColocadas;
-    }
-
-
-// Método para calcular la heurística basada en la distancia de Manhattan
-    public void CalcularHeuristicaManhattan()
-    {
-               int heuristicaManhattan = 0;
- int[,] meta = {
-            {0, 1, 2},
-            {3, 4, 5},
-            {6, 7, 8}
-        };
-
-        for (int i = 0; i < 3; i++)
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                int valor = nodo[i, j];
-                if (valor != 0)
-                {
-                    for (int x = 0; x < 3; x++)
-                    {
-                        for (int y = 0; y < 3; y++)
-                        {
-                            if (meta[x, y] == valor)
-                            {
-                                heuristicaManhattan += Math.Abs(i - x) + Math.Abs(j - y);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        manhattan = heuristicaManhattan;
-}
 
 
 }//Nodo 
