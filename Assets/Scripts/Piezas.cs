@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public class Piezas 
 {
@@ -12,7 +13,7 @@ public class Piezas
         // Creo el nodo
     
         int[,] piezas= {{1,2,3}, 
-                        {4,5,8},
+                        {5,4,8},
                         {6,0,7}};//Creo el array
 
         Nodo root=new Nodo(piezas);// Creo el objeto con el array
@@ -47,7 +48,7 @@ public class Piezas
         List<Nodo> CaminoSoluccion = new List<Nodo>(); // Lista con el camino
         bool encontrado=false;
         Abiertos.Add(root);//añado el raíz
-        int contador = 0;
+        int contador = 0; // Por si acaso nos quedásemos enganchados
 
         while(Abiertos.Count > 0 && !encontrado)
         {
@@ -57,7 +58,7 @@ public class Piezas
             //Tratamos el nodo actual. 
             if (actual.EsMeta())
             {
-               // Console.WriteLine("Hemos encontrado el nodo solución!!!!");
+               
                 encontrado = true;
                 //tenemos que devolver el camino a la solución, es decir, la lista de los nodos
                 // por los que tenemos que pasar
@@ -94,6 +95,177 @@ public class Piezas
 
     }//BusquedaAnchura
 
+
+    /// <summary>
+    /// Búsqueda en Profundidad
+    /// </summary>
+    /// <param name="lista"></param>
+    /// <param name="hijoActual"></param>
+    /// <returns></returns>
+    /// 
+    public List<Nodo> BusquedaProfundidad(Nodo root)
+    {
+
+        List<Nodo> Abiertos = new List<Nodo>();//La lógica es de una Pila
+        //Stack<Nodo> Abiertos=new Stack<Nodo>();
+        List<Nodo> Cerrados = new List<Nodo>();// Nodos que ya he visitado
+        List<Nodo> CaminoSoluccion = new List<Nodo>(); // Lista con el camino
+        bool encontrado = false;
+        Abiertos.Add(root);// añado el raíz (Push)
+        //Abiertos.Push(root);
+        int contador = 0;
+
+        while (Abiertos.Count > 0 && !encontrado)
+        {
+            int ultimoIndice = Abiertos.Count - 1; //Para coger el último elemento (lógica LIFO)
+            Nodo actual=Abiertos[ultimoIndice]; // Cogemos el último elmento
+            //Nodo actual=Abiertos.pop();
+            Abiertos.RemoveAt(ultimoIndice);
+            Cerrados.Add(actual);
+            if (actual.EsMeta())
+            {
+                encontrado = true;
+                Trazo(CaminoSoluccion, actual);
+                return CaminoSoluccion;
+            }//if
+            actual.Expandir();
+            for (int i = 0; i < actual.hijos.Count; i++)// Recorremos todos los hijos
+            {
+                Nodo hijoActual = actual.hijos[i];
+                if (!Contiene(Abiertos, hijoActual) && !Contiene(Cerrados, hijoActual))
+                {
+                    Abiertos.Add(hijoActual);// metemos como una posible solución (Push)
+                    contador++;
+                }//if
+
+            }//for
+
+        }//while
+
+        return null;
+
+    }//BusquedaProfundidad
+
+
+
+    /// <summary>
+    /// Búsqueda en Profundidad
+    /// </summary>
+    /// <param name="lista"></param>
+    /// <param name="hijoActual"></param>
+    /// <returns></returns>
+    /// 
+    public List<Nodo> BusquedaProfundidadAcotada(Nodo root, int limite)
+    {
+
+        List<Nodo> Abiertos = new List<Nodo>();//La lógica es de una Pila
+        List<Nodo> Cerrados = new List<Nodo>();// Nodos que ya he visitado
+        List<Nodo> CaminoSoluccion = new List<Nodo>(); // Lista con el camino
+        bool encontrado = false;
+        Abiertos.Add(root);// añado el raíz (Push)
+        root.Costo = 0; //Incializo el valor de profundidad
+
+        while (Abiertos.Count > 0 && !encontrado)
+        {
+            int ultimoIndice = Abiertos.Count - 1; //Para coger el último elemento (lógica LIFO)
+            Nodo actual = Abiertos[ultimoIndice]; // Cogemos el último elmento
+            Abiertos.RemoveAt(ultimoIndice);
+            Cerrados.Add(actual);
+            if (actual.EsMeta())
+            {
+                encontrado = true;
+                Trazo(CaminoSoluccion, actual);
+                return CaminoSoluccion;
+            }//if
+            if (actual.Costo < limite)
+            {
+                actual.Expandir();
+                for (int i = 0; i < actual.hijos.Count; i++)// Recorremos todos los hijos
+                {
+                    Nodo hijoActual = actual.hijos[i];
+                    hijoActual.Costo = actual.Costo + 1;//Aquí se actualiza el valor de nivel del árbol
+                    if (!Contiene(Abiertos, hijoActual) && !Contiene(Cerrados, hijoActual))
+                    {
+
+                        Abiertos.Add(hijoActual);// metemos como una posible solución (Push)
+ 
+                    }//if
+
+                }//1 if
+            }//for
+
+        }//while
+
+
+        return null;
+
+
+    }//BusquedaProfundidad
+
+
+    /// <summary>
+    /// Búsqueda A* 
+    /// </summary>
+    /// <param name="lista"></param>
+    /// <param name="hijoActual"></param>
+    /// <returns></returns>
+    /// 
+    public List<Nodo> BusacaAsterisco(Nodo root)
+    {
+
+        List<Nodo> Abiertos = new List<Nodo>();
+        List<Nodo> Cerrados = new List<Nodo>();// Nodos que ya he visitado
+        List<Nodo> CaminoSoluccion = new List<Nodo>(); // Lista con el camino
+        bool encontrado = false;
+        Abiertos.Add(root);// añado el raíz (Push)
+        root.Costo = 0; //Incializo el valor de profundidad
+        root.calculaMalColocadas();
+
+        while (Abiertos.Count > 0 && !encontrado)
+        {
+            //Reordeno abiertos para que el costo+heurística sea de menor a mayor
+            Abiertos=Abiertos.OrderBy(n=>n.Costo+n.Heuristica).ToList();//Ordenamos por coste+heurística
+            // Cogemos el primer nodo de abiertos
+            Nodo actual = Abiertos[0];
+            Abiertos.RemoveAt(0);
+
+            if (actual.EsMeta())
+            {
+                encontrado = true;
+                UnityEngine.Debug.Log("Hemos encontrado la solución");
+                Trazo(CaminoSoluccion, actual);
+                return CaminoSoluccion;
+            }
+            Cerrados.Add(actual);
+            actual.Expandir();
+            for (int i = 0; i < actual.hijos.Count; i++)// Recorremos todos los hijos
+            {
+                Nodo hijoActual = actual.hijos[i];
+                hijoActual.Costo = actual.Costo + 1;//Aquí se actualiza el valor de nivel del árbol
+                hijoActual.calculaMalColocadas(); //Calculo la heurística
+                if (!Contiene(Abiertos, hijoActual) && !Contiene(Cerrados, hijoActual))
+                {
+
+                    Abiertos.Add(hijoActual);// metemos como una posible solución (Push)
+
+                }//if
+
+
+            }//for
+
+        }//while
+
+
+        return null;
+
+
+    }//BusacaAsterisco
+
+
+
+
+
+
     private bool Contiene(List<Nodo> lista,Nodo hijoActual)
     {
         /*   for (int i = 0; i < lista.Count; i++)
@@ -125,27 +297,6 @@ public class Piezas
             camino.Add(actual);
         }
 
-    }
-
-
-
-    private int[,] GenerarMatrizAleatoria()
-    {
-        int[,] matriz = new int[3, 3];
-        List<int> numeros = new List<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
-        Random rand = new Random();
-
-        for (int i = 0; i < 3; i++)
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                int index = rand.Next(numeros.Count);
-                matriz[i, j] = numeros[index];
-                numeros.RemoveAt(index);
-            }
-        }
-
-        return matriz;
     }
 
 

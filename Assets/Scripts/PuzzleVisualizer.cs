@@ -15,6 +15,9 @@ public class PuzzleVisualizer : MonoBehaviour
 
     public TextMeshProUGUI pasoTexto;
 
+    // Constantes
+    private const int LIMITE_PROFUNDIDAD_ACOTADA = 25;//Límite de bucles infinitos
+
     void Start()
     {
         pasoTexto.text = "Desordenado";
@@ -26,24 +29,26 @@ public class PuzzleVisualizer : MonoBehaviour
         Piezas piezas = new Piezas();
         int[,] estadoInicial = {
             {1, 2, 3},
-            {4, 5, 8},
+            {5, 8, 4},
             {6, 0, 7}
         };
         Nodo root = new Nodo(estadoInicial);
         
         ActualizarVisualizacion(root);
         pasoTexto.text = "Buscando solución...";
-        solucion = piezas.BusquedaAnchura(root);
+        //solucion = piezas.BusquedaAnchura(root);
+        //solucion = piezas.BusquedaProfundidadAcotada(root, LIMITE_PROFUNDIDAD_ACOTADA);
+        solucion=piezas.BusacaAsterisco(root);
         pasoTexto.text = "Solución encontrada!";
 
 
 
 
-        if (solucion != null && solucion.Count > 0)
+        if (solucion != null && solucion.Count > 0)//Si existe solución
         {
             solucion.Reverse(); // Mostrar desde el inicio
             StartCoroutine(MostrarSolucionPasoAPaso());
-        }
+        }//if
     }
 
     void CrearVisualizacion()

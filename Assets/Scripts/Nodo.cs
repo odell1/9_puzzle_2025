@@ -12,7 +12,7 @@ public class Nodo
     public List<Nodo> hijos=new List<Nodo> ();// Lista para almacenar los hijos
     public Nodo padre; //Referencia al padre
 
-    public int Heuristica;
+    public int Heuristica; //Valor de heurística
 
     public int Costo { get; internal set; }
     public int manhattan { get; private set; }
@@ -239,7 +239,20 @@ public class Nodo
         
     }//Copiar
 
+    ////////
+    /// Método para calcular las piezas mal colocadas
+    /// /////////
+    public void calculaMalColocadas()
+    {
+        int indice=0;
+        int mal = 0;
+        for (int i = 0; i < 3; i++)
+            for (int j = 0; j < 3; j++)
+                if (this.nodo[i, j] != indice) mal++;
+            
 
+        this.Heuristica = mal;
+    }//calculaMalColocadas
 
 
 }//Nodo 
